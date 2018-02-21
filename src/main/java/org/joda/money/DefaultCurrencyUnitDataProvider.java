@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 class DefaultCurrencyUnitDataProvider extends CurrencyUnitDataProvider {
 
     /** Regex format for the csv line. */
-    private static final Pattern REGEX_LINE = Pattern.compile("([A-Z]{3}),(-1|[0-9]{1,3}),(-1|[0-9]),([A-Z]*)#?.*");
+    private static final Pattern REGEX_LINE = Pattern.compile("([A-Z]{3}),(-1|[0-9]{1,3}),(-1|[0-9]|[1-2][0-9]|30),([A-Z]*)#?.*");
 
     /**
      * Registers all the currencies known by this provider.
@@ -62,10 +62,12 @@ class DefaultCurrencyUnitDataProvider extends CurrencyUnitDataProvider {
         Exception resultEx = null;
         try {
             in = getClass().getResourceAsStream(fileName);
-            if (in == null && isNecessary) {
-                throw new FileNotFoundException("Data file " + fileName + " not found");
-            } else if (in == null && !isNecessary) {
-                return; // no extension file found, no problem. just return
+            if (in == null) {
+                if (isNecessary) {
+                    throw new FileNotFoundException("Data file " + fileName + " not found");
+                } else {
+                    return; // no extension file found, no problem. just return
+                }
             }
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line;

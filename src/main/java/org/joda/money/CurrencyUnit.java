@@ -76,7 +76,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>, Serializabl
                         "org.joda.money.CurrencyUnitDataProvider", "org.joda.money.DefaultCurrencyUnitDataProvider");
                 Class<? extends CurrencyUnitDataProvider> cls =
                         CurrencyUnit.class.getClassLoader().loadClass(clsName).asSubclass(CurrencyUnitDataProvider.class);
-                cls.newInstance().registerCurrencies();
+                cls.getDeclaredConstructor().newInstance().registerCurrencies();
             } catch (SecurityException ex) {
                 new DefaultCurrencyUnitDataProvider().registerCurrencies();
             }
@@ -147,7 +147,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>, Serializabl
      * @param currencyCode  the three-letter upper-case currency code, not null
      * @param numericCurrencyCode  the numeric currency code, from 0 to 999, -1 if none
      * @param decimalPlaces  the number of decimal places that the currency
-     *  normally has, from 0 to 9 (normally 0, 2 or 3), or -1 for a pseudo-currency
+     *  normally has, from 0 to 30 (normally 0, 2 or 3), or -1 for a pseudo-currency
      * @param countryCodes  the country codes to register the currency under, not null
      * @return the new instance, never null
      * @throws IllegalArgumentException if the code is already registered, or the
@@ -177,7 +177,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>, Serializabl
      * @param currencyCode  the three-letter upper-case currency code, not null
      * @param numericCurrencyCode  the numeric currency code, from 0 to 999, -1 if none
      * @param decimalPlaces  the number of decimal places that the currency
-     *  normally has, from 0 to 9 (normally 0, 2 or 3), or -1 for a pseudo-currency
+     *  normally has, from 0 to 30 (normally 0, 2 or 3), or -1 for a pseudo-currency
      * @param countryCodes  the country codes to register the currency under,
      *  use of ISO-3166 is recommended, not null
      * @param force  true to register forcefully, replacing any existing matching currency,
@@ -198,7 +198,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>, Serializabl
         if (numericCurrencyCode < -1 || numericCurrencyCode > 999) {
             throw new IllegalArgumentException("Invalid numeric code");
         }
-        if (decimalPlaces < -1 || decimalPlaces > 9) {
+        if (decimalPlaces < -1 || decimalPlaces > 30) {
             throw new IllegalArgumentException("Invalid number of decimal places");
         }
         MoneyUtils.checkNotNull(countryCodes, "Country codes must not be null");
@@ -407,7 +407,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>, Serializabl
      * Block malicious data streams.
      * 
      * @param ois  the input stream, not null
-     * @throws InvalidObjectException
+     * @throws InvalidObjectException if an error occurs
      */
     private void readObject(ObjectInputStream ois) throws InvalidObjectException {
         throw new InvalidObjectException("Serialization delegate required");
